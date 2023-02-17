@@ -28,26 +28,25 @@ SUBNET_CIDR=$(get meta-data/network/interfaces/macs/$MAC/subnet-ipv4-cidr-block)
 SECURITY_GROUP_IDS=$(get meta-data/network/interfaces/macs/$MAC/security-group-ids)
 SECURITY_GROUPS=$(get meta-data/network/interfaces/macs/$MAC/security-groups)
 
-echo "domain: $DOMAIN"
-echo "availability-zone: $AZ"
-echo "instance-id: $INSTANCE_ID"
-echo "instance-type: $INSTANCE_TYPE"
-echo "profile: $PROFILE"
-echo "ami-id: $AMI_ID"
-echo "ssh key: $PUBLIC_KEY"
-echo "hostname: $HOSTNAME"
-echo "public-hostname: $PUBLIC_HOSTNAME"
-echo "mac: $MAC"
-echo "interface-id: $INTERFACE_ID"
-echo "vpc-id: $VPC_ID"
-echo "subnet-id: $SUBNET_ID"
-echo "vpc-cidr: $VPC_CIDR"
-echo "subnet-cidr: $SUBNET_CIDR"
-echo "security-group-ids: ${SECURITY_GROUP_IDS//$'\n'/ }"
-echo "security-groups: ${SECURITY_GROUPS//$'\n'/ }"
-echo "region: $REGION"
-
-
-
-
-
+sudo cat  >>/tmp/metadata.txt<<EOL
+domain: $DOMAIN
+availability-zone: $AZ
+instance-id: $INSTANCE_ID
+instance-type: $INSTANCE_TYPE
+profile: $PROFILE
+ami-id: $AMI_ID
+ssh key: $PUBLIC_KEY
+hostname: $HOSTNAME
+public-hostname: $PUBLIC_HOSTNAME
+mac: $MAC
+interface-id: $INTERFACE_ID
+vpc-id: $VPC_ID
+subnet-id: $SUBNET_ID
+vpc-cidr: $VPC_CIDR
+subnet-cidr: $SUBNET_CIDR
+security-group-ids: ${SECURITY_GROUP_IDS//$'\n'/ }
+security-groups: ${SECURITY_GROUPS//$'\n'/ }
+region: $REGION
+EOL
+		  
+jq -Rs '[ split("\n")[] | select(length > 0) | split(":") | {(.[0]): .[1]} ]' /tmp/metadata.txt
